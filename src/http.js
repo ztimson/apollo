@@ -12,7 +12,7 @@ export default class Http extends Controller {
     this.express.get('*', (req, res) => {
        let p = req.params['0'];
        if(!p || p == '/') p = 'index.html';
-       const absolute = path.join(import.meta.url, '/../', p).replace('file:', '');
+       const absolute = path.join(import.meta.url, '/../../ui/', p).replace('file:', '');
        res.sendFile(absolute);
     });
     this.express.get('/api/*', async (req, res) => {
