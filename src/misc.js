@@ -2,11 +2,27 @@ import * as readline from 'node:readline';
 import {exec} from 'child_process';
 
 export function $(str, ...args) {
-	let cmd = str.reduce((acc, part, i) => acc + part + (args[i] || ''), '');
-	return new Promise((res, rej) => exec(cmd, (err, stdout, stderr) => {
-		if(err || stderr) return rej(err || stderr);
-		return res(stdout);
-	}))
+    let cmd = str.reduce((acc, part, i) => acc + part + (args[i] || ''), '');
+    return new Promise((res, rej) => exec(cmd, (err, stdout, stderr) => {
+        if (err || stderr) return rej(err || stderr);
+        return res(stdout);
+    }))
+}
+
+export function adjustedInterval(cb, ms) {
+    let cancel = false, timeout = null;
+    const p = async () => {
+        if (cancel) return;
+        const start = new Date().getTime();
+        await cb();
+        const end = new Date().getTime();
+        timeout = setTimeout(() => p(), ms - (end - start) || 1);
+    };
+    p();
+    return () => {
+        cancel = true;
+        if (timeout) clearTimeout(timeout);
+    }
 }
 
 export function ask(prompt, hide = false) {
@@ -48,22 +64,6 @@ export function ask(prompt, hide = false) {
             rl.input.resume();
         }
     });
-}
-
-export function poll(cb, ms) {
-    let cancel = false, timeout = null;
-    const p = async () => {
-        if(cancel) return;
-        const start = new Date().getTime();
-        await cb();
-        const end = new Date().getTime();
-        timeout = setTimeout(() => p(), ms - (end - start));
-    };
-    p();
-    return () => {
-        cancel = true;
-        if(timeout) clearTimeout(timeout);
-    }
 }
 
 export function sleep(ms) {

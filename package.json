@@ -10,7 +10,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "bme280-sensor": "^0.1.7",
     "express": "^4.21.1",
     "i2c-bus": "^5.2.3",
     "serialport": "^12.0.0"

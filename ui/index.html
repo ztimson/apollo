@@ -3,9 +3,43 @@
 <html>
   <head>
     <title>Apollo v0.0.0</title>
+
+    <style>
+	    html, body {
+		    margin: 0;
+		    padding: 0;
+		    width: 100%;
+		    height: 100%;
+		    background: #1a1a1a;
+		    color: white;
+		    font-family: sans-serif;
+	    }
+
+	    .text-muted {
+		    color: #aaa;
+	    }
+    </style>
   </head>
 
   <body>
-    <h1>Apollo v0.0.0</h1>
+    <nav style="padding: 0.5rem;">
+	    <div style="display: flex; flex-direction: row">
+		    <div>
+			    <h1 style="display: inline; font-size: 1rem;">Apollo Control</h1>
+		    </div>
+		    <div style="flex-grow: 1"></div>
+		    <div class="text-muted" style="font-size: 1rem">
+			    <span id="time">00:00:00</span> UTC
+		    </div>
+	    </div>
+    </nav>
+
+	  <script>
+		  const time = document.querySelector('#time');
+		  setInterval(() => {
+			  const now = new Date();
+			  time.innerHTML = `${now.getHours().toString().padStart(2, 0)}:${now.getMinutes().toString().padStart(2, 0)}:${now.getSeconds().toString().padStart(2, 0)}`;
+		  }, 1000);
+	  </script>
   </body>
 </html>

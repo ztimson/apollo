@@ -1,50 +1,51 @@
-import BME280 from 'bme280-sensor';
-import {poll} from './misc.js';
+import {adjustedInterval, sleep} from './misc.js';
+import {bms} from './bms.js';
+import {bme} from './bme280.js';
 
 export default class SensorSuite {
-    bme280;
-    stopBme280;
-
-    _data = {
-        acceleration: [null, null, null],
-        altitude: null,
-        battery: null,
-        gpsStrength: null,
-        gyro: [null, null, null],
-        humidity: null,
-        magnetometer: [null, null, null],
-        position: [null, null],
-        pressure: null,
-        temperature: null,
-        voltage: null,
+    data = {
+        battery: {charging: false, temperature: 0, percentage: 0, voltage: 0},
+        environment: {humidity: 0, temperature: 0, pressure: 0, altitude: 0},
+        movement: {accelerometer: null, gyro: null, magnetometer: null},
+        gps: {accuracy: null, lat: null, long: null, altitude: 0, ground: 0, time: 0}
     }
-    set data(d) { this._data = d; }
-    get data() { return {timestamp: new Date().getTime(), ...this._data}; }
+    intervals = [];
+    status = {}
 
-    _env_sensor = false;
-    get status() { return { env_sensor: this._env_sensor ? 'ok' : 'failed' }; }
+    #altitude; // Pressure <-> GPS correction for future calculations TODO: Update on GPS events
+    get altitude() {
+        return data.environment.altitude + (this.#altitude ?? 0);
+    }
 
     constructor() {
-        this.bme280 = new BME280({i2cBusNo: 1, i2cAddress: 0x76});
     }
 
-    start() {
-        return this.bme280.init().then(() => {
-          // Poll environmental data
-          this._env_sensor = true;
-          this.stopBme280 = poll(async () => {
-              const d = await this.bme280.readSensorData();
-              this._data.humidity = d.humidity / 100;
-              this._data.temperature = d.temperature_C;
-              this._data.pressure = d.pressure_hPa;
-              this._data.altitude = BME280.calculateAltitudeMeters(this.data.pressure);
-          }, 1000);
+    static #hPaToAltitude(hPa) {
+        return 44330 * (1 - Math.pow(hPa / 1013.25, 1 / 5.255));
+    }
+
+    async start() {
+        this.intervals.push(adjustedInterval(async () => {
+            this.data.environment = await this.statusWrapper(bme(), 'bme280');
+            this.data.environment.altitude = SensorSuite.#hPaToAltitude(this.data.environment.pressure);
+        }, 1000));
+        await sleep(500); // Offset reading sensor data
+        this.intervals.push(adjustedInterval(async () => {
+            this.data.battery = await this.statusWrapper(bms(), 'bms');
+        }, 1000));
+    }
+
+    statusWrapper(promise, key) {
+        return promise.then(resp => {
+            this.status[key] = 'ok'
+            return resp;
         }).catch(err => {
-          this._env_sensor = false;
+            this.status[key] = err.message;
         });
     }
 
     stop() {
-      if(this.stopBme280) this.stopBme280();
+        this.intervals.forEach(unsubscribe => unsubscribe());
+        this.intervals = [];
     }
 }
