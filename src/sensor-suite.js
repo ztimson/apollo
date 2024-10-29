@@ -27,7 +27,8 @@ export default class SensorSuite {
     async start() {
         this.intervals.push(adjustedInterval(async () => {
             this.data.environment = await this.statusWrapper(bme(), 'bme280');
-            this.data.environment.altitude = SensorSuite.#hPaToAltitude(this.data.environment.pressure);
+            if(this.data.environment.pressure != null)
+                this.data.environment.altitude = SensorSuite.#hPaToAltitude(this.data.environment.pressure);
         }, 1000));
         await sleep(500); // Offset reading sensor data
         this.intervals.push(adjustedInterval(async () => {

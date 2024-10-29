@@ -1,8 +1,8 @@
 import {ask} from './misc.js';
 import Daemon from './daemon.js';
 
-const command = process.argv[1];
-let remote;
+const command = process.argv[2];
+let remote = 'localhost';
 
 function help() {
     return `
@@ -26,16 +26,16 @@ function run(cmd) {
     else if(cmd === 'help') return this.help();
     else if(cmd.startsWith('remote')) remote = cmd.split(' ').pop();
     else if(cmd.startsWith('start')) new Daemon(+cmd.split(' ').pop() || 80);
-    else return fetch(`${remote}/api/${cmd}`).then(resp => {
+    else return fetch(`${remote.startsWith('http') ? '' : 'http://'}${remote}/api/${cmd}`).then(resp => {
         if(resp.ok && resp.headers['Content-Type'].includes('json'))
             return resp.json();
         else return resp.text();
-    });
+    }).catch(err => err.message);
 }
 
 if(command) console.log(run(command));
 else console.log(help());
 while(true) {
     const cmd = await ask('> ');
-    console.log(run(cmd), '\n');
+    console.log(await run(cmd), '\n');
 }
