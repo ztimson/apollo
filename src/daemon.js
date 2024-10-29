@@ -7,7 +7,7 @@ export default class Daemon {
     apollo;
     express;
 
-    constructor(port = 80) {
+    constructor(port = 1969) {
         this.apollo = APOLLO;
         this.apollo.start();
 
