@@ -221,7 +221,7 @@
 				});
 
 				run('status').then(status => {
-					statusEnv.forEach(se => se.style.background = status['bme'] === 'ok' ? 'green' : 'red');
+					statusEnv.forEach(se => se.style.background = status['bme280'] === 'ok' ? 'green' : 'red');
 					statusBat.forEach(sb => sb.style.background = status['bms'] === 'ok' ? 'green' : 'red');
 				});
 
