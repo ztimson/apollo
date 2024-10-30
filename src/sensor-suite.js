@@ -1,4 +1,4 @@
-import {adjustedInterval, sleep} from './misc.js';
+import {adjustedInterval, sleep} from '@ztimson/utils';
 import {bms} from './bms.js';
 import {bme} from './bme280.js';
 
