@@ -196,12 +196,15 @@
 			const battery = document.querySelectorAll('.battery');
 			const batteryTemp = document.querySelectorAll('.battery-temperature');
 			const batteryIcon = document.querySelectorAll('.battery-icon');
+			const humidity = document.querySelectorAll('.humidity');
 			const navball = document.querySelectorAll('.navball');
+			const pressure = document.querySelectorAll('.pressure');
 			const statusAgm = document.querySelectorAll('.status-agm');
 			const statusBat = document.querySelectorAll('.status-bat');
 			const statusEnv = document.querySelectorAll('.status-env');
 			const statusGps = document.querySelectorAll('.status-gps');
 			const statusTel = document.querySelectorAll('.status-tel');
+			const temperature = document.querySelectorAll('.temperature');
 			const time = document.querySelectorAll('.time');
 			const tPlus = document.querySelectorAll('.t-plus');
 			const voltage = document.querySelectorAll('.voltage');
@@ -217,6 +220,9 @@
 					battery.forEach(b => b.innerHTML = (sensors.battery?.percentage || 0) * 100);
 					batteryTemp.forEach(bt => bt.innerHTML = sensors.battery?.temperature || 0);
 					batteryIcon.forEach(bi => bi.className = sensors.battery?.charging ? 'fa fa-bolt' : 'fa fa-battery');
+					humidity.forEach(h => h.innerHTML = sensors.environment?.humidity ?? 0);
+					pressure.forEach(p => p.innerHTML = sensors.environment?.pressure ?? 0);
+					temperature.forEach(t => t.innerHTML = sensors.environment?.temperature ?? 0);
 					voltage.forEach(v => v.innerHTML = sensors.battery?.voltage || 0);
 				});
 
