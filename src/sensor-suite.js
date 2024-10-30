@@ -1,6 +1,7 @@
 import {adjustedInterval, sleep} from '@ztimson/utils';
 import {bms} from './bms.js';
 import {bme} from './bme280.js';
+import {imu} from './bno080.js';
 
 export default class SensorSuite {
     data = {
@@ -25,11 +26,15 @@ export default class SensorSuite {
     }
 
     async start() {
+        // Movement
+        this.intervals.push(adjustedInterval(async () => {
+            this.data.movement = await this.statusWrapper(imu(), 'imu');
+        }, 1000));
+        // Environment
         this.intervals.push(adjustedInterval(async () => {
             this.data.environment = await this.statusWrapper(bme(), 'bme280');
-            if(this.data.environment?.pressure != null)
-                this.data.environment.altitude = SensorSuite.#hPaToAltitude(this.data.environment.pressure);
         }, 1000));
+        // Battery
         await sleep(500); // Offset reading sensor data
         this.intervals.push(adjustedInterval(async () => {
             this.data.battery = await this.statusWrapper(bms(), 'bms');
