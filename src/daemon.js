@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express from 'express';
 import path from 'path';
 import APOLLO from './apollo.js';
@@ -13,7 +14,9 @@ export default class Daemon {
 
         this.express = express();
 
-        this.express.get('/api/*', async (req, res) => {
+	this.express.use(cors('*'));
+
+	this.express.get('/api/*', async (req, res) => {
             const cmd = req.params['0'];
             res.json(await this.run(cmd));
         });
