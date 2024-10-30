@@ -30,8 +30,11 @@ function run(cmd) {
     else if(cmd.startsWith('remote')) {
       remote = cmd.split(' ').pop();
       return `Remote Set: ${remote}`;
-    } else if(cmd.startsWith('start')) new Daemon(+cmd.split(' ').pop() || 1969);
-    else return fetch(`${remote.startsWith('http') ? '' : 'http://'}${remote}/api/${cmd}`).then(resp => {
+    } else if(cmd.startsWith('start')) {
+        const port = +cmd.split(' ').pop() || 1969;
+        new Daemon(port);
+        return `Listening on: http://localhost:${port}`;
+    } else return fetch(`${remote.startsWith('http') ? '' : 'http://'}${remote}/api/${cmd}`).then(resp => {
         if(resp.ok && resp.headers['Content-Type']?.includes('json'))
             return resp.json();
         else return resp.text();
@@ -41,7 +44,7 @@ function run(cmd) {
   }
 }
 
-if(command) console.log(run(command));
+if(command) return console.log(run(command));
 else console.log(help());
 while(true) {
     const cmd = await ask('> ');

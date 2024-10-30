@@ -14,9 +14,9 @@ export default class Daemon {
 
         this.express = express();
 
-	this.express.use(cors('*'));
+        this.express.use(cors('*'));
 
-	this.express.get('/api/*', async (req, res) => {
+        this.express.get('/api/*', async (req, res) => {
             const cmd = req.params['0'];
             res.json(await this.run(cmd));
         });
