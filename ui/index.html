@@ -180,10 +180,10 @@
 		</dialog>
 
 		<script>
-			const remote = localStorage.getItem('remote') || 'localhost:1969';
+			const remote = localStorage.getItem('remote') || '';
 
 			function run(cmd) {
-				return fetch(`${remote.startsWith('http') ? '' : 'http://'}${remote}/api/${cmd}`).then(async resp => {
+				return fetch(`${remote}/api/${cmd}`).then(async resp => {
 					const value = await resp.text();
 					try {
 						return JSON.parse(value);
