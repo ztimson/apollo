@@ -44,9 +44,11 @@ function run(cmd) {
   }
 }
 
-if(command) return console.log(run(command));
-else console.log(help());
-while(true) {
-    const cmd = await ask('> ');
-    console.log(await run(cmd), '\n');
+if(command) console.log(run(command));
+else {
+    console.log(help());
+    while(true) {
+        const cmd = await ask('> ');
+        console.log(await run(cmd), '\n');
+    }
 }
