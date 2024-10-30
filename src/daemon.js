@@ -21,6 +21,11 @@ export default class Daemon {
             res.json(await this.run(cmd));
         });
 
+        this.express.get('/favicon.*', (req, res) => {
+            const absolute = path.join(import.meta.url, '/../../ui/favicon.png').replace('file:', '');
+            res.sendFile(absolute);
+        });
+
         this.express.get('*', (req, res) => {
             let p = req.params['0'];
             if (!p || p == '/') p = 'index.html';
