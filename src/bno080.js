@@ -1,6 +1,6 @@
 import i2c from 'i2c-bus';
 
-export async function imu(address = 0x4A) {  // BNO080 default I2C address
+export async function imu(address = 0x4B) {  // BNO080 default I2C address
     const i2cBus = await i2c.openPromisified(1);
 
     // Register addresses for accelerometer, gyroscope, and magnetometer data (assumes configuration is done)
