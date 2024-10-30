@@ -9,6 +9,7 @@ export async function bms(address = 0x57) {
         i2cBus.readByte(address, 0x23),
         i2cBus.readByte(address, 0x2a),
     ]);
+    await i2cBus.close();
     return {
         charging: !!((data[0] >> 7) & 1),
         percentage: data[4] / 100,
