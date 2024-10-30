@@ -141,7 +141,7 @@
 					<div class="status status-bat">BAT</div>
 					<div class="status status-env">ENV</div>
 					<div class="status status-gps">GPS</div>
-					<div class="status status-agm">IMU</div>
+					<div class="status status-imu">IMU</div>
 					<div class="status status-tel">TEL</div>
 				</div>
 
@@ -199,9 +199,9 @@
 			const humidity = document.querySelectorAll('.humidity');
 			const navball = document.querySelectorAll('.navball');
 			const pressure = document.querySelectorAll('.pressure');
-			const statusAgm = document.querySelectorAll('.status-agm');
 			const statusBat = document.querySelectorAll('.status-bat');
 			const statusEnv = document.querySelectorAll('.status-env');
+			const statusImu = document.querySelectorAll('.status-imu');
 			const statusGps = document.querySelectorAll('.status-gps');
 			const statusTel = document.querySelectorAll('.status-tel');
 			const temperature = document.querySelectorAll('.temperature');
@@ -227,8 +227,9 @@
 				});
 
 				run('status').then(status => {
-					statusEnv.forEach(se => se.style.background = status['bme280'] === 'ok' ? 'green' : 'red');
 					statusBat.forEach(sb => sb.style.background = status['bms'] === 'ok' ? 'green' : 'red');
+					statusEnv.forEach(se => se.style.background = status['bme280'] === 'ok' ? 'green' : 'red');
+					statusImu.forEach(sb => sb.style.background = status['imu'] === 'ok' ? 'green' : 'red');
 				});
 
 				navball.forEach(n => n.style.transform = `rotate(${count * 5}deg)`);
