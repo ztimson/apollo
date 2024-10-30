@@ -1,45 +1,233 @@
 <!Doctype html>
 
 <html>
-  <head>
-    <title>Apollo v0.0.0</title>
+	<head>
+		<title>Apollo v0.0.0</title>
+		<link href="./assets/bootstrap.min.css" rel="stylesheet"/>
+		<link href="./assets/font-awesome/css/font-awesome.css" rel="stylesheet"/>
+		<style>
+			html, body {
+				margin: 0;
+				padding: 0;
+				width: 100%;
+				height: 100%;
+				background: #1a1a1a;
+				color: #aaa;
+				font-family: sans-serif;
+			}
 
-    <style>
-	    html, body {
-		    margin: 0;
-		    padding: 0;
-		    width: 100%;
-		    height: 100%;
-		    background: #1a1a1a;
-		    color: white;
-		    font-family: sans-serif;
-	    }
+			h1{
+				color: white;
+			}
 
-	    .text-muted {
-		    color: #aaa;
-	    }
-    </style>
-  </head>
+			h2, h3, h4, h5, h6, p {
+				color: #aaa;
+			}
 
-  <body>
-    <nav style="padding: 0.5rem;">
-	    <div style="display: flex; flex-direction: row">
-		    <div>
-			    <h1 style="display: inline; font-size: 1rem;">Apollo Control</h1>
-		    </div>
-		    <div style="flex-grow: 1"></div>
-		    <div class="text-muted" style="font-size: 1rem">
-			    <span id="time">00:00:00</span> UTC
-		    </div>
-	    </div>
-    </nav>
+			.card {
+				background: #333;
+			}
 
-	  <script>
-		  const time = document.querySelector('#time');
-		  setInterval(() => {
-			  const now = new Date();
-			  time.innerHTML = `${now.getHours().toString().padStart(2, 0)}:${now.getMinutes().toString().padStart(2, 0)}:${now.getSeconds().toString().padStart(2, 0)}`;
-		  }, 1000);
-	  </script>
-  </body>
+
+			.navball {
+				height: 100%;
+				width: 100%;
+				background: url('./assets/navball2.png') repeat;
+				background-size: 360px;
+				transition: all 1s linear;
+			}
+
+			.navball-container {
+				position: relative;
+				height: 180px;
+				width: 180px;
+				border: #aaa 2px solid;
+				border-radius: 50%;
+				overflow: hidden;
+			}
+
+			.navball-cursor {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+			}
+
+			.no-signal {
+				top: 50%;
+				background: red;
+				border: darkred;
+				color: black;
+			}
+
+			.no-signal::backdrop {
+				background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+				backdrop-filter: blur(5px);           /* Optional blur effect */
+			}
+
+			.text-muted {
+				color: #aaa !important;
+			}
+
+			.status {
+				display: inline;
+				margin: 0.25rem;
+				padding: 0.25rem;
+				width: 62px;
+				text-align: center;
+				color: white !important;
+				background: grey;
+			}
+		</style>
+	</head>
+
+	<body>
+		<nav class="px-3 pt-3">
+			<div class="d-flex">
+				<div>
+					<h1 style="font-size: 1rem;">Apollo Control</h1>
+				</div>
+				<div class="flex-grow-1"></div>
+				<div class="text-muted" style="font-size: 1rem">
+					<i class="fa fa-signal mx-2"></i>
+					<i class="fa fa-location-crosshairs mx-2"></i>
+					<span class="battery mx-2">0</span>% <i class="battery-icon fa fa-battery"></i>
+					<span class="mx-2"><span class="time">00:00:00</span> UTC</span>
+				</div>
+			</div>
+		</nav>
+
+		<div class="d-flex">
+			<div style="width: 250px">
+
+				<div class="card m-3 p-3">
+					<h2 class="mb-1" style="font-size: 1rem">Altitude</h2>
+					<hr class="my-1" style="border-color: #aaa">
+				</div>
+
+				<div class="card m-3 p-3">
+					<h2 class="mb-1" style="font-size: 1rem">Model</h2>
+					<hr class="my-1" style="border-color: #aaa">
+				</div>
+
+				<div class="card m-3 p-3">
+					<h2 class="mb-1" style="font-size: 1rem">Nav Ball</h2>
+					<hr class="mt-1 mb-2" style="border-color: #aaa">
+					<div class="navball-container">
+						<div class="navball"></div>
+						<img class="navball-cursor" src="./assets/navball-cursor.png" />
+					</div>
+				</div>
+
+			</div>
+
+			<div class="d-flex flex-column flex-grow-1 my-3">
+
+				<div class="card flex-grow-1 p-3 mb-3"></div>
+
+				<div class="card p-3">
+					<div class="d-flex justify-content-between">
+						<p class="mb-0">T-0</p>
+						<p class="mb-0">T+<span class="t-plus">0</span></p>
+					</div>
+					<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+				</div>
+
+			</div>
+
+			<div style="width: 250px">
+
+				<div class="d-flex flex-wrap m-3">
+					<div class="status status-bat">BAT</div>
+					<div class="status status-env">ENV</div>
+					<div class="status status-gps">GPS</div>
+					<div class="status status-agm">IMU</div>
+					<div class="status status-tel">TEL</div>
+				</div>
+
+				<div class="card m-3 p-3">
+					<h2 class="mb-1" style="font-size: 1rem">Position</h2>
+					<hr class="my-1" style="border-color: #aaa">
+					<p class="mb-1">Altitude: <span class="altitude">0</span> m</p>
+					<p class="mb-1">Azimuth: <span class="azimuth">0</span>&deg;</p>
+					<p class="mb-1">Coordinates: <span class="latlng">0, 0</span></p>
+				</div>
+
+				<div class="card m-3 p-3">
+					<h2 class="mb-1" style="font-size: 1rem">Sensors</h2>
+					<hr class="my-1" style="border-color: #aaa">
+					<p class="mb-1">Battery: <span class="battery">0</span>%</p>
+					<p class="mb-1">Bat. Temp: <span class="battery-temperature">0</span>&deg;C</p>
+					<p class="mb-1">Humidity: <span class="humidity">0</span>%</p>
+					<p class="mb-1">Pressure: <span class="pressure">0</span> hPa</p>
+					<p class="mb-1">Temperature: <span class="temperature">0</span>&deg;C</p>
+					<p class="mb-1">Voltage: <span class="voltage">0</span> v</p>
+				</div>
+
+				<div class="card m-3 p-3">
+					<h2 class="mb-1" style="font-size: 1rem">Telemetry</h2>
+					<hr class="my-1" style="border-color: #aaa">
+					<p class="mb-1">Strength: <span class="azimuth">0</span> db</p>
+					<p class="mb-1">TX/RX: <span class="azimuth">0</span>/0</p>
+					<p class="mb-1">WiFi: AP Mode</p>
+				</div>
+
+			</div>
+		</div>
+
+		<dialog class="no-signal">
+			<i class="fa fa-tower-broadcast pe-2"></i><strong>NO SIGNAL</strong>
+		</dialog>
+
+		<script>
+			const remote = localStorage.getItem('remote') || 'localhost:1969';
+
+			function run(cmd) {
+				return fetch(`${remote.startsWith('http') ? '' : 'http://'}${remote}/api/${cmd}`).then(async resp => {
+					const value = await resp.text();
+					try {
+						return JSON.parse(value);
+					} catch {
+						return value;
+					}
+				}).catch(err => err.message);
+			}
+
+			const battery = document.querySelectorAll('.battery');
+			const batteryTemp = document.querySelectorAll('.battery-temperature');
+			const batteryIcon = document.querySelectorAll('.battery-icon');
+			const navball = document.querySelectorAll('.navball');
+			const statusAgm = document.querySelectorAll('.status-agm');
+			const statusBat = document.querySelectorAll('.status-bat');
+			const statusEnv = document.querySelectorAll('.status-env');
+			const statusGps = document.querySelectorAll('.status-gps');
+			const statusTel = document.querySelectorAll('.status-tel');
+			const time = document.querySelectorAll('.time');
+			const tPlus = document.querySelectorAll('.t-plus');
+			const voltage = document.querySelectorAll('.voltage');
+
+			let count = 0;
+			setInterval(async () => {
+				count++;
+				const now = new Date();
+				time.forEach(t => t.innerHTML = `${now.getUTCHours().toString().padStart(2, 0)}:${now.getMinutes().toString().padStart(2, 0)}:${now.getSeconds().toString().padStart(2, 0)}`);
+				tPlus.forEach(t => t.innerHTML = count.toString());
+
+				run('sensors').then(sensors => {
+					battery.forEach(b => b.innerHTML = (sensors.battery?.percentage || 0) * 100);
+					batteryTemp.forEach(bt => bt.innerHTML = sensors.battery?.temperature || 0);
+					batteryIcon.forEach(bi => bi.className = sensors.battery?.charging ? 'fa fa-bolt' : 'fa fa-battery');
+					voltage.forEach(v => v.innerHTML = sensors.battery?.voltage || 0);
+				});
+
+				run('status').then(status => {
+					statusEnv.forEach(se => se.style.background = status['bme'] === 'ok' ? 'green' : 'red');
+					statusBat.forEach(sb => sb.style.background = status['bms'] === 'ok' ? 'green' : 'red');
+				});
+
+				navball.forEach(n => n.style.transform = `rotate(${count * 5}deg)`);
+				navball.forEach(n => n.style.backgroundPositionY = `${count}px`);
+			}, 1000);
+		</script>
+	</body>
 </html>

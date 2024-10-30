@@ -9,22 +9,6 @@ export function $(str, ...args) {
     }))
 }
 
-export function adjustedInterval(cb, ms) {
-    let cancel = false, timeout = null;
-    const p = async () => {
-        if (cancel) return;
-        const start = new Date().getTime();
-        await cb();
-        const end = new Date().getTime();
-        timeout = setTimeout(() => p(), ms - (end - start) || 1);
-    };
-    p();
-    return () => {
-        cancel = true;
-        if (timeout) clearTimeout(timeout);
-    }
-}
-
 export function ask(prompt, hide = false) {
     const rl = readline.createInterface({
         input: process.stdin,
@@ -64,8 +48,4 @@ export function ask(prompt, hide = false) {
             rl.input.resume();
         }
     });
-}
-
-export function sleep(ms) {
-    return new Promise(res => setTimeout(res, ms));
 }
